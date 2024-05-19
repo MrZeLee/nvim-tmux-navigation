@@ -1,6 +1,7 @@
 local util = {}
 
 local tmux_directions = { ['p'] = 'l', ['h'] = 'L', ['j'] = 'D', ['k'] = 'U', ['l'] = 'R', ['n'] = 't:.+' }
+local tmux_pane = { ['h'] = 'pane_at_right', ['j'] = 'pane_at_top', ['k'] = 'pane_at_bottom', ['l'] = 'pane_at_left' }
 
 -- send the tmux command to the server running on the socket
 -- given by the environment variable $TMUX
@@ -27,8 +28,13 @@ function util.should_tmux_control(is_same_winnr, disable_nav_when_zoomed)
 end
 
 -- change the current pane according to direction
-function util.tmux_change_pane(direction)
-    tmux_command("select-pane -" .. tmux_directions[direction])
+function util.tmux_change_pane(direction, no_wrap)
+    -- if no_wrap is true and the direction is not "p" or "n"
+    if no_wrap and direction ~= 'p' and direction ~= 'n' then
+        tmux_command("if-shell -F \"#{" .. tmux_pane[direction] .. "}\" \"\"" .. "\"select-pane -" .. tmux_directions[direction] .. "\"")
+    else
+        tmux_command("select-pane -" .. tmux_directions[direction])
+    end
 end
 
 -- capitalization util, only capitalizes the first character of the whole word

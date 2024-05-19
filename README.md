@@ -122,12 +122,14 @@ For `init.lua`, you can either map the commands manually (probably using
 it for you!
 
 There are additional settings for the plugin, for example disable navigation
-between `tmux` panes when the current pane is zoomed. To activate this option,
+between `tmux` panes when the current pane is zoomed, or disable navigation
+past the edge of the screen. To activate this option,
 just tell the plugin about it (inside the `setup` function):
 
 ```lua
 require'nvim-tmux-navigation'.setup {
-    disable_when_zoomed = true -- defaults to false
+    disable_when_zoomed = true, -- defaults to false
+    tmux_navigator_no_wrap = true -- defaults to false
 }
 ```
 
@@ -140,7 +142,8 @@ inside your `init.lua`, you can do everything at once:
     local nvim_tmux_nav = require('nvim-tmux-navigation')
 
     nvim_tmux_nav.setup {
-        disable_when_zoomed = true -- defaults to false
+        disable_when_zoomed = true, -- defaults to false
+        tmux_navigator_no_wrap = true -- defaults to false
     }
 
     vim.keymap.set('n', "<C-h>", nvim_tmux_nav.NvimTmuxNavigateLeft)
