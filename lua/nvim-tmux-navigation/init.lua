@@ -5,7 +5,7 @@ local M = {}
 -- default configuration, can be changed through the setup function
 local config = {
     disable_when_zoomed = false,
-    tmux_navigator_no_wrap = false,
+    no_wrap = false,
     keybindings = {}
 }
 
@@ -62,7 +62,7 @@ local function tmux_navigate(direction)
 
         -- if we're in the same window and zoom is not disabled, tmux should take control
         if util.should_tmux_control(is_same_winnr, config.disable_when_zoomed) then
-            util.tmux_change_pane(direction, config.tmux_navigator_no_wrap)
+            util.tmux_change_pane(direction, config.no_wrap)
             tmux_control = true
         else
             tmux_control = false
@@ -77,7 +77,7 @@ function M.setup(user_config)
 
     -- whether tmux should wrap around when navigating
     -- defaults to false
-    config.tmux_navigator_no_wrap = user_config.tmux_navigator_no_wrap or false
+    config.no_wrap = user_config.no_wrap or false
 
     -- keybindings for the navigation
     config.keybindings = user_config.keybindings or {}

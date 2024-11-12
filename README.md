@@ -86,6 +86,25 @@ bind-key -T copy-mode-vi 'C-l' select-pane -R
 bind-key -T copy-mode-vi 'C-\' select-pane -l
 bind-key -T copy-mode-vi 'C-Space' select-pane -t:.+
 ```
+If you're using the `no_wrap = true` option in Neovim (see Neovim configuration
+section below), you should use these alternative bindings in tmux to ensure
+consistent behavior between Neovim and tmux:
+
+```tmux
+bind-key -n 'C-h' if-shell "$is_vim" { send-keys C-h } { if-shell -F '#{pane_at_left}'   {} { select-pane -L } }
+bind-key -n 'C-j' if-shell "$is_vim" { send-keys C-j } { if-shell -F '#{pane_at_bottom}' {} { select-pane -D } }
+bind-key -n 'C-k' if-shell "$is_vim" { send-keys C-k } { if-shell -F '#{pane_at_top}'    {} { select-pane -U } }
+bind-key -n 'C-l' if-shell "$is_vim" { send-keys C-l } { if-shell -F '#{pane_at_right}'  {} { select-pane -R } }
+
+bind-key -T copy-mode-vi 'C-h' if-shell -F '#{pane_at_left}'   {} { select-pane -L }
+bind-key -T copy-mode-vi 'C-j' if-shell -F '#{pane_at_bottom}' {} { select-pane -D }
+bind-key -T copy-mode-vi 'C-k' if-shell -F '#{pane_at_top}'    {} { select-pane -U }
+bind-key -T copy-mode-vi 'C-l' if-shell -F '#{pane_at_right}'  {} { select-pane -R }
+```
+
+These bindings will prevent wrapping around to the opposite side when reaching
+the edge of the screen in tmux, matching the behavior when `no_wrap = true` is
+set in Neovim.
 
 #### Tmux Plugin Manager
 
@@ -129,7 +148,7 @@ just tell the plugin about it (inside the `setup` function):
 ```lua
 require'nvim-tmux-navigation'.setup {
     disable_when_zoomed = true, -- defaults to false
-    tmux_navigator_no_wrap = true -- defaults to false
+    no_wrap = true -- defaults to false
 }
 ```
 
@@ -143,7 +162,7 @@ inside your `init.lua`, you can do everything at once:
 
     nvim_tmux_nav.setup {
         disable_when_zoomed = true, -- defaults to false
-        tmux_navigator_no_wrap = true -- defaults to false
+        no_wrap = true -- defaults to false
     }
 
     vim.keymap.set('n', "<C-h>", nvim_tmux_nav.NvimTmuxNavigateLeft)
@@ -163,6 +182,7 @@ Or, for a shorter syntax:
 { 'alexghergh/nvim-tmux-navigation', config = function()
     require'nvim-tmux-navigation'.setup {
         disable_when_zoomed = true, -- defaults to false
+        no_wrap = true, -- defaults to false
         keybindings = {
             left = "<C-h>",
             down = "<C-j>",
